@@ -1,25 +1,20 @@
-name: Update FIO in all plugin repositories
+name: Sync FIO module to plugins
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   update-fio:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Module_FIO
+      - name: Checkout FIO module
         uses: actions/checkout@v4
 
-      - name: Set up Git
+      - name: Setup Git
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y git
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Update FIO in plugin repositories
         env:
@@ -28,21 +23,26 @@ jobs:
           echo "🔧 Starting FIO sync..."
           FIO_DIR="$GITHUB_WORKSPACE/FIO"
 
-          # Definuj zoznam plugin repozitárov (HTTPS URL s tokenom)
+          # pluginy ako URL so zabudovaným tokenom
           PLUGINS=(
-            "https://x-access-token:{GH_TOKEN}@github.com/MarcelSuleiman/plugin_one.git"
-            "https://x-access-token:{GH_TOKEN}@github.com/MarcelSuleiman/plugin_two.git"
+            "plugin_one"
+            "plugin_two"
           )
 
-          for repo in "${PLUGINS[@]}"; do
-            echo "➡️ Updating $(basename $repo .git)..."
-            git clone "$repo"
-            cd "$(basename "$repo" .git)"
+          for plugin in "${PLUGINS[@]}"; do
+            echo "➡️ Updating $plugin..."
+            git clone "https://github.com/MarcelSuleiman/${plugin}.git"
+            cd "$plugin"
             rm -rf FIO
             cp -r "$FIO_DIR" ./FIO
             git add FIO
             git commit -m "Update FIO to latest version from Module_FIO" || echo "No changes to commit"
-            git push origin main || git push origin master || true
+            
+            # autentifikovaný push
+            git push "https://MarcelSuleiman:${GH_TOKEN}@github.com/MarcelSuleiman/${plugin}.git" HEAD:main \
+              || git push "https://MarcelSuleiman:${GH_TOKEN}@github.com/MarcelSuleiman/${plugin}.git" HEAD:master \
+              || true
+
             cd ..
           done
 
