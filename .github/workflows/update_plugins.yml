@@ -1,6 +1,9 @@
 name: Sync FIO module to plugins
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
