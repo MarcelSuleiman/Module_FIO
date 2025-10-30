@@ -1,53 +1,76 @@
-- name: Update FIO in plugin repositories
-  env:
-    GH_TOKEN: ${{ secrets.GH_TOKEN }}
-  run: |
-    echo "🔧 Starting FIO sync..."
-    # z FIO repozitára
-    FIO_DIR="$GITHUB_WORKSPACE/FIO"
-    if [ ! -d "$FIO_DIR" ]; then
-      if [ -d "$GITHUB_WORKSPACE/libs/FIO" ]; then
-        FIO_DIR="$GITHUB_WORKSPACE/libs/FIO"
-      else
-        echo "❌ FIO module not found!"
-        exit 1
-      fi
-    fi
-    echo "📂 Using FIO from $FIO_DIR"
+name: Sync FIO module to plugins
 
-    PLUGINS=(
-      "plugin_one"
-      "plugin_two"
-    )
+on:
+  push:
+#    branches:
+#      - main
+#      - master
+  workflow_dispatch:
 
-    for plugin in "${PLUGINS[@]}"; do
-      echo "➡️ Updating $plugin..."
-      git clone "https://github.com/MarcelSuleiman/${plugin}.git"
-      cd "$plugin"
+jobs:
+  update-fio:
+    runs-on: ubuntu-latest
 
-      # check where FIO is located
-      if [ -d "FIO" ]; then
-        TARGET_DIR="FIO"
-      elif [ -d "libs/FIO" ]; then
-        TARGET_DIR="libs/FIO"
-      else
-        TARGET_DIR="FIO"
-        mkdir -p "$TARGET_DIR"
-      fi
-      echo "📂 Updating FIO in $TARGET_DIR"
+    steps:
+      - name: Checkout FIO module
+        uses: actions/checkout@v4
 
-      # remove old FIO and copy new one
-      rm -rf "$TARGET_DIR"
-      cp -r "$FIO_DIR" "$TARGET_DIR"
+      - name: Setup Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      git add "$TARGET_DIR"
-      git commit -m "Update FIO to latest version from Module_FIO" || echo "No changes to commit"
+      - name: Update FIO in plugin repositories
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          echo "🔧 Starting FIO sync..."
+          # z FIO repozitára
+          FIO_DIR="$GITHUB_WORKSPACE/FIO"
+          if [ ! -d "$FIO_DIR" ]; then
+            if [ -d "$GITHUB_WORKSPACE/libs/FIO" ]; then
+              FIO_DIR="$GITHUB_WORKSPACE/libs/FIO"
+            else
+              echo "❌ FIO module not found!"
+              exit 1
+            fi
+          fi
+          echo "📂 Using FIO from $FIO_DIR"
 
-      git push "https://MarcelSuleiman:${GH_TOKEN}@github.com/MarcelSuleiman/${plugin}.git" HEAD:main \
-        || git push "https://MarcelSuleiman:${GH_TOKEN}@github.com/MarcelSuleiman/${plugin}.git" HEAD:master \
-        || true
+          PLUGINS=(
+            "plugin_one"
+            "plugin_two"
+          )
 
-      cd ..
-    done
+          for plugin in "${PLUGINS[@]}"; do
+            echo "➡️ Updating $plugin..."
+            git clone "https://github.com/MarcelSuleiman/${plugin}.git"
+            cd "$plugin"
 
-    echo "✅ All plugins updated successfully."
+            # check where FIO is located
+            if [ -d "FIO" ]; then
+              TARGET_DIR="FIO"
+            elif [ -d "libs/FIO" ]; then
+              TARGET_DIR="libs/FIO"
+            else
+              TARGET_DIR="FIO"
+              mkdir -p "$TARGET_DIR"
+            fi
+            echo "📂 Updating FIO in $TARGET_DIR"
+
+            # remove old FIO and copy new one
+            rm -rf "$TARGET_DIR"
+            cp -r "$FIO_DIR" "$TARGET_DIR"
+
+            git add "$TARGET_DIR"
+            git commit -m "Update FIO to latest version from Module_FIO" || echo "No changes to commit"
+
+            git push "https://MarcelSuleiman:${GH_TOKEN}@github.com/MarcelSuleiman/${plugin}.git" HEAD:main \
+              || git push "https://MarcelSuleiman:${GH_TOKEN}@github.com/MarcelSuleiman/${plugin}.git" HEAD:master \
+              || true
+
+            cd ..
+          done
+
+          echo "✅ All plugins updated successfully."
+      
