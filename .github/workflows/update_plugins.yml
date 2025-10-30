@@ -25,9 +25,18 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           echo "🔧 Starting FIO sync..."
-          FIO_DIR="$GITHUB_WORKSPACE/FIO"
 
-          # plugins as URL with token for push
+          FIO_DIR="$GITHUB_WORKSPACE/FIO"
+          if [ ! -d "$FIO_DIR" ]; then
+            if [ -d "$GITHUB_WORKSPACE/libs/FIO" ]; then
+              FIO_DIR="$GITHUB_WORKSPACE/libs/FIO"
+            else
+              echo "❌ FIO module not found!"
+              exit 1
+            fi
+          fi
+          echo "📂 Using FIO from $FIO_DIR"
+
           PLUGINS=(
             "plugin_one"
             "plugin_two"
@@ -41,8 +50,7 @@ jobs:
             cp -r "$FIO_DIR" ./FIO
             git add FIO
             git commit -m "Update FIO to latest version from Module_FIO" || echo "No changes to commit"
-            
-            # authenticated push
+
             git push "https://MarcelSuleiman:${GH_TOKEN}@github.com/MarcelSuleiman/${plugin}.git" HEAD:main \
               || git push "https://MarcelSuleiman:${GH_TOKEN}@github.com/MarcelSuleiman/${plugin}.git" HEAD:master \
               || true
