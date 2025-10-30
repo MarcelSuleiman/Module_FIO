@@ -2,9 +2,9 @@ name: Sync FIO module to plugins
 
 on:
   push:
-    branches:
-      - main
-      - master
+#    branches:
+#      - main
+#      - master
   workflow_dispatch:
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
           echo "🔧 Starting FIO sync..."
           FIO_DIR="$GITHUB_WORKSPACE/FIO"
 
-          # pluginy ako URL so zabudovaným tokenom
+          # plugins as URL with token for push
           PLUGINS=(
             "plugin_one"
             "plugin_two"
@@ -42,7 +42,7 @@ jobs:
             git add FIO
             git commit -m "Update FIO to latest version from Module_FIO" || echo "No changes to commit"
             
-            # autentifikovaný push
+            # authenticated push
             git push "https://MarcelSuleiman:${GH_TOKEN}@github.com/MarcelSuleiman/${plugin}.git" HEAD:main \
               || git push "https://MarcelSuleiman:${GH_TOKEN}@github.com/MarcelSuleiman/${plugin}.git" HEAD:master \
               || true
