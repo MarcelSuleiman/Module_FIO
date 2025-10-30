@@ -1,0 +1,5 @@
+def one():
+   print("one")
+
+
+one()
