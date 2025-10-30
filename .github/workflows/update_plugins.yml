@@ -2,9 +2,9 @@ name: Sync FIO module to plugins
 
 on:
   push:
-#    branches:
-#      - main
-#      - master
+    branches:
+      - main
+      - master
   workflow_dispatch:
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           echo "🔧 Starting FIO sync..."
-          # z FIO repozitára
+          # from FIO module repo
           FIO_DIR="$GITHUB_WORKSPACE/FIO"
           if [ ! -d "$FIO_DIR" ]; then
             if [ -d "$GITHUB_WORKSPACE/libs/FIO" ]; then
