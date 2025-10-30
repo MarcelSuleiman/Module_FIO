@@ -23,15 +23,15 @@ jobs:
 
       - name: Update FIO in plugin repositories
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           echo "🔧 Starting FIO sync..."
           FIO_DIR="$GITHUB_WORKSPACE/FIO"
 
           # Definuj zoznam plugin repozitárov (HTTPS URL s tokenom)
           PLUGINS=(
-            "https://x-access-token:{GITHUB_TOKEN}@github.com/MarcelSuleiman/plugin_one.git"
-            "https://x-access-token:{GITHUB_TOKEN}@github.com/MarcelSuleiman/plugin_two.git"
+            "https://x-access-token:{GH_TOKEN}@github.com/MarcelSuleiman/plugin_one.git"
+            "https://x-access-token:{GH_TOKEN}@github.com/MarcelSuleiman/plugin_two.git"
           )
 
           for repo in "${PLUGINS[@]}"; do
