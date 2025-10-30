@@ -1,0 +1,51 @@
+name: Update FIO in all plugin repositories
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-fio:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Module_FIO
+        uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y git
+
+      - name: Update FIO in plugin repositories
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          echo "🔧 Starting FIO sync..."
+          FIO_DIR="$GITHUB_WORKSPACE/FIO"
+
+          # Definuj zoznam plugin repozitárov (HTTPS URL s tokenom)
+          PLUGINS=(
+            "https://x-access-token:{GITHUB_TOKEN}@github.com/MarcelSuleiman/plugin_one.git"
+            "https://x-access-token:{GITHUB_TOKEN}@github.com/MarcelSuleiman/plugin_two.git"
+            "https://x-access-token:{GITHUB_TOKEN}@github.com/MarcelSuleiman/plugin_mem.git"
+            "https://x-access-token:{GITHUB_TOKEN}@github.com/MarcelSuleiman/plugin_disk.git"
+          )
+
+          for repo in "${PLUGINS[@]}"; do
+            echo "➡️ Updating $(basename $repo .git)..."
+            git clone "$repo"
+            cd "$(basename "$repo" .git)"
+            rm -rf FIO
+            cp -r "$FIO_DIR" ./FIO
+            git add FIO
+            git commit -m "Update FIO to latest version from Module_FIO" || echo "No changes to commit"
+            git push origin main || git push origin master || true
+            cd ..
+          done
+
+          echo "✅ All plugins updated successfully."
