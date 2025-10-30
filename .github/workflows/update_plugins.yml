@@ -23,7 +23,7 @@ jobs:
 
       - name: Update FIO in plugin repositories
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "🔧 Starting FIO sync..."
           FIO_DIR="$GITHUB_WORKSPACE/FIO"
@@ -32,8 +32,6 @@ jobs:
           PLUGINS=(
             "https://x-access-token:{GITHUB_TOKEN}@github.com/MarcelSuleiman/plugin_one.git"
             "https://x-access-token:{GITHUB_TOKEN}@github.com/MarcelSuleiman/plugin_two.git"
-            "https://x-access-token:{GITHUB_TOKEN}@github.com/MarcelSuleiman/plugin_mem.git"
-            "https://x-access-token:{GITHUB_TOKEN}@github.com/MarcelSuleiman/plugin_disk.git"
           )
 
           for repo in "${PLUGINS[@]}"; do
