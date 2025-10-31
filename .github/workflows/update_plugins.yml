@@ -28,11 +28,7 @@ jobs:
           # from FIO module repo
           FIO_DIR="$GITHUB_WORKSPACE/FIO"
           
-
-          PLUGINS=(
-            "plugin_one"
-            "plugin_two"
-          )
+          mapfile -t PLUGINS < "$GITHUB_WORKSPACE/plugins.txt"
 
           for plugin in "${PLUGINS[@]}"; do
             echo "➡️ Updating $plugin..."
