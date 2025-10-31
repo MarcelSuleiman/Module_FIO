@@ -25,7 +25,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           echo "🔧 Starting FIO sync..."
-
+          # from FIO module repo
+          FIO_DIR="$GITHUB_WORKSPACE/FIO"
+          
 
           PLUGINS=(
             "plugin_one"
