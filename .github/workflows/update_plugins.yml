@@ -27,15 +27,15 @@ jobs:
           echo "🔧 Starting FIO sync..."
           # from FIO module repo
           FIO_DIR="$GITHUB_WORKSPACE/FIO"
-#          if [ ! -d "$FIO_DIR" ]; then
-#            if [ -d "$GITHUB_WORKSPACE/libs/FIO" ]; then
-#              FIO_DIR="$GITHUB_WORKSPACE/libs/FIO"
-#            else
-#              echo "❌ FIO module not found!"
-#              exit 1
-#            fi
-#          fi
-#          echo "📂 Using FIO from $FIO_DIR"
+          if [ ! -d "$FIO_DIR" ]; then
+            if [ -d "$GITHUB_WORKSPACE/libs/FIO" ]; then
+              FIO_DIR="$GITHUB_WORKSPACE/libs/FIO"
+            else
+              echo "❌ FIO module not found!"
+              exit 1
+            fi
+          fi
+          echo "📂 Using FIO from $FIO_DIR"
 
           PLUGINS=(
             "plugin_one"
